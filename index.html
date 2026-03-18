@@ -5,34 +5,109 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Client Registration</title>
     <style>
+        /* 3D Gradient Background for the whole screen */
         body {
-            font-family: Arial, sans-serif;
-            padding: 30px;
-            background-color: #f4f4f9;
-        }
-        .container {
-            background: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin: 0;
+            background: linear-gradient(135deg, #74ebd5 0%, #acb6e5 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
+
+        /* 3D Floating Card Effect for the Form */
+        .container {
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            padding: 30px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+            /* Heavy drop shadow to make it pop off the screen */
+            box-shadow: 10px 10px 20px rgba(0,0,0,0.15), 
+                       -10px -10px 20px rgba(255,255,255,0.8);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+        }
+
+        /* Styling the Labels */
+        label {
+            font-weight: bold;
+            color: #555;
+            display: block;
+            margin-top: 15px;
+        }
+
+        /* 3D Input Fields with clear borders */
         input {
             width: 100%;
-            padding: 12px;
-            margin: 10px 0 20px 0;
+            padding: 14px;
+            margin: 8px 0 10px 0;
             box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            border: 2px solid #b3b3b3; /* Clear border outside */
+            border-radius: 8px;
+            background-color: #fafafa;
+            /* Inner shadow so the text boxes look indented */
+            box-shadow: inset 3px 3px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            font-size: 15px;
         }
+
+        /* Make the border glow purple when typing */
+        input:focus {
+            border-color: #6200ea;
+            outline: none;
+            box-shadow: inset 3px 3px 6px rgba(0,0,0,0.05), 0 0 8px rgba(98,0,234,0.3);
+        }
+
+        /* Default 3D Gradient Submit Button */
         button {
             width: 100%;
-            background-color: #6200ea; /* Kodular Purple */
+            margin-top: 20px;
+            background: linear-gradient(145deg, #6200ea, #4a00b0); /* Kodular Purple Gradient */
             color: white;
-            padding: 14px;
+            padding: 15px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
+            /* Button drop shadow */
+            box-shadow: 0 6px 10px rgba(98, 0, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        /* Button click effect (pushes down) */
+        button:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 5px rgba(98, 0, 234, 0.3);
+        }
+
+        /* Success state for the button */
+        button.success-state {
+            background: linear-gradient(145deg, #28a745, #1e7e34) !important; /* Green Gradient */
+            box-shadow: 0 6px 10px rgba(40, 167, 69, 0.3) !important;
+        }
+
+        /* Disabled loading state */
+        button:disabled {
+            background: #a37bf0;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -40,7 +115,7 @@
 
     <div class="container">
         <h2>Client Registration</h2>
-        <form action="https://script.google.com/macros/s/AKfycbzYl5LEYBeb0FfgHvajfeCCI4olSUwjOJbeMj7mfswTNoVXWWNsBF2tPBqWwuP1L_hfHg/exec" method="GET">
+        <form id="regForm">
             
             <label for="name">Name</label>
             <input type="text" id="name" name="name" placeholder="Enter Name" required>
@@ -51,10 +126,62 @@
             <label for="pincode">Pin Code</label>
             <input type="number" id="pincode" name="pincode" placeholder="Enter Pin Code" required>
 
-            <button type="submit">Submit</button>
+            <button type="submit" id="submitBtn">Submit</button>
+            <div id="message"></div>
             
         </form>
     </div>
+
+    <script>
+        const btn = document.getElementById("submitBtn");
+        const msg = document.getElementById("message");
+        const inputs = document.querySelectorAll("input");
+
+        // --- NEW FEATURE: Reset button when user starts typing again ---
+        inputs.forEach(input => {
+            input.addEventListener("input", function() {
+                // If they start typing, remove the green success class
+                btn.classList.remove("success-state");
+                btn.innerText = "Submit";
+                msg.innerText = ""; // Clear the success text
+            });
+        });
+
+        document.getElementById("regForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            btn.disabled = true;
+            btn.innerText = "Submitting...";
+            msg.innerText = ""; 
+
+            var name = document.getElementById("name").value;
+            var number = document.getElementById("number").value;
+            var pincode = document.getElementById("pincode").value;
+
+            // PASTE YOUR GOOGLE SCRIPT URL BELOW
+            var scriptUrl = "https://script.google.com/macros/s/AKfycbzYl5LEYBeb0FfgHvajfeCCI4olSUwjOJbeMj7mfswTNoVXWWNsBF2tPBqWwuP1L_hfHg/exec"; 
+            
+            var finalUrl = scriptUrl + "?name=" + encodeURIComponent(name) + "&number=" + encodeURIComponent(number) + "&pincode=" + encodeURIComponent(pincode);
+
+            fetch(finalUrl, { mode: 'no-cors' })
+                .then(() => {
+                    // --- Change button to Green Success State ---
+                    btn.classList.add("success-state");
+                    btn.innerText = "Submitted!";
+                    
+                    msg.style.color = "#28a745"; // Green text
+                    msg.innerText = "Registration Successful!";
+                    document.getElementById("regForm").reset(); 
+                })
+                .catch((error) => {
+                    msg.style.color = "red";
+                    msg.innerText = "Error. Please check your internet connection.";
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                });
+        });
+    </script>
 
 </body>
 </html>
